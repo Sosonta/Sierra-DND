@@ -66,7 +66,7 @@ export function ProfilePage() {
         roles: Array.isArray(data?.roles) ? data.roles : [],
         photoUrl: data?.photoUrl ?? null,
         theme: (data?.theme === "light" ? "light" : "dark"),
-        accentColor: typeof data?.accentColor === "string" ? data.accentColor : "#7c3aed",
+        accentColor: typeof data?.accentColor === "string" ? data.accentColor : "#ffffff",
         displayNameSnapshot: data?.displayNameSnapshot ?? null,
       };
 
@@ -226,16 +226,12 @@ export function ProfilePage() {
           <div className="small">{email ?? "No email"}</div>
           <div className="small">Roles: {rolesLabel}</div>
         </div>
-
-        <div style={{ color: "var(--accent)", fontWeight: 700 }}>
-          Accent
-        </div>
       </div>
 
       <div className="card" style={{ display: "grid", gap: 10 }}>
         <h2 style={{ margin: 0 }}>Alias</h2>
         <div className="small">
-          Your alias is shown on posts, comments, RSVPs, and forum activity. Must be unique.
+          Your alias is shown on posts, comments, RSVPs, and forum activity.
         </div>
 
         <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>

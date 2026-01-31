@@ -25,6 +25,42 @@ type UserDoc = {
 
 const EMPTY_DOC = { type: "doc", content: [{ type: "paragraph" }] };
 
+function BubbleToggle({
+  checked,
+  onToggle,
+  title,
+}: {
+  checked: boolean;
+  onToggle: () => void;
+  title?: string;
+}) {
+  return (
+    <span
+      role="checkbox"
+      aria-checked={checked}
+      tabIndex={0}
+      title={title}
+      onClick={onToggle}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onToggle();
+        }
+      }}
+      style={{
+        width: 14,
+        height: 14,
+        borderRadius: 999,
+        border: "1px solid var(--border)",
+        background: checked ? "var(--accent)" : "transparent",
+        display: "inline-block",
+        cursor: "pointer",
+        flex: "0 0 auto",
+      }}
+    />
+  );
+}
+
 function toLocalInputValue(d: Date) {
   const pad = (n: number) => String(n).padStart(2, "0");
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(
@@ -371,24 +407,25 @@ export function BlogEditorPage({ mode }: { mode: "new" | "edit" }) {
 
         {/* Create Event toggle */}
         <div className="card" style={{ padding: 12, display: "grid", gap: 10 }}>
-          <label style={{ display: "flex", gap: 10, alignItems: "center" }}>
-            <input
-              type="checkbox"
-              checked={createEvent}
-              onChange={(e) => {
-                const on = e.target.checked;
-                setCreateEvent(on);
-                if (on && !eventStart) setEventStart(toLocalInputValue(new Date()));
-              }}
-            />
-            <div>
-              <div style={{ fontWeight: 900 }}>Create Event</div>
-              <div className="small">
-                Adds a matching Calendar event. Editing the event
-                on the Calendar will also update this blog post’s event time.
-              </div>
-            </div>
-          </label>
+<label style={{ display: "flex", gap: 10, alignItems: "center" }}>
+  <BubbleToggle
+    checked={createEvent}
+    onToggle={() => {
+      const on = !createEvent;
+      setCreateEvent(on);
+      if (on && !eventStart) setEventStart(toLocalInputValue(new Date()));
+    }}
+    title={createEvent ? "Enabled" : "Disabled"}
+  />
+  <div>
+    <div style={{ fontWeight: 900 }}>Create Event</div>
+    <div className="small">
+      Adds a matching Calendar event. Editing the event
+      on the Calendar will also update this blog post’s event time.
+    </div>
+  </div>
+</label>
+
 
           {createEvent ? (
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
@@ -429,7 +466,7 @@ export function BlogEditorPage({ mode }: { mode: "new" | "edit" }) {
                   padding: "8px 10px",
                   borderRadius: 2,
                   border: "1px solid var(--border)",
-                  background: tags.includes(tg) ? "rgba(124,58,237,0.25)" : "transparent",
+                  background: tags.includes(tg) ? "rgb(26, 26, 26)" : "transparent",
                   color: "var(--text)",
                   cursor: "pointer",
                 }}

@@ -235,13 +235,6 @@ export function LandingPage() {
                     <div className="small" style={{ opacity: 0.9, marginTop: 4 }}>
                       {formatDateTime(ev.startAt)}
                     </div>
-
-                    {/* Optional extra line: linked blog slug */}
-                    {ev.linkedBlogSlug ? (
-                      <div className="small" style={{ marginTop: 4, opacity: 0.85 }}>
-                        Linked: /blog/{ev.linkedBlogSlug}
-                      </div>
-                    ) : null}
                   </div>
                 </Link>
               ))}

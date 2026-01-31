@@ -3,21 +3,33 @@ import { Link, Outlet, useLocation } from "react-router-dom";
 import { auth } from "../firebase";
 import { logOut } from "../auth";
 import logo from "../assets/logo.png";
-
+import { useEffect } from "react";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../firebase";
 
 export function SidebarLayout() {
   const loc = useLocation();
+const [roles, setRoles] = useState<string[]>([]);
 
-  const links = useMemo(
-    () => [
+
+const links = useMemo(() => {
+  const baseLinks = [
     { to: "/", label: "Home", className: "nav-landing" },
-      { to: "/blog", label: "Blog" },
-      { to: "/calendar", label: "Calendar" },
-      { to: "/profile", label: "Profile" },
-      { to: "/admin/users", label: "Admin" },
-    ],
-    []
-  );
+    { to: "/blog", label: "Blog" },
+    { to: "/calendar", label: "Calendar" },
+    { to: "/profile", label: "Profile" },
+    { to: "/character", label: "Character Sheet" },
+
+  ];
+
+  if (roles.includes("Admin")) {
+    baseLinks.push({ to: "/admin/users", label: "Admin" });
+  }
+
+  return baseLinks;
+}, [roles]);
+
+
 
   const SIDEBAR_W = 240;
   const TAB_W = 44;
@@ -26,6 +38,50 @@ export function SidebarLayout() {
 
   // When closed, we slide left but keep TAB_W visible
   const closedOffset = SIDEBAR_W - TAB_W;
+
+useEffect(() => {
+  const fetchRoles = async () => {
+    const user = auth.currentUser;
+    if (!user) {
+      setRoles([]);
+      return;
+    }
+
+    const snap = await getDoc(doc(db, "users", user.uid));
+    if (!snap.exists()) {
+      setRoles([]);
+      return;
+    }
+
+    const data = snap.data();
+
+    // If your schema is: roles: string[]
+    if (Array.isArray(data.roles)) {
+      setRoles(data.roles);
+      return;
+    }
+
+    // If your schema is: role: string (legacy)
+    if (typeof data.role === "string") {
+      setRoles([data.role]);
+      return;
+    }
+
+    // If your schema is: roles: { Admin: true, ... }
+    if (data.roles && typeof data.roles === "object") {
+      const enabled = Object.entries(data.roles)
+        .filter(([, v]) => v === true)
+        .map(([k]) => k);
+      setRoles(enabled);
+      return;
+    }
+
+    setRoles([]);
+  };
+
+  fetchRoles();
+}, []);
+
 
   return (
     <div style={{ minHeight: "100vh" }}>

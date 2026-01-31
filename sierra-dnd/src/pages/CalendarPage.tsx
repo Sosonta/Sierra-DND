@@ -106,6 +106,50 @@ function useQueryParam(name: string) {
   return useMemo(() => new URLSearchParams(loc.search).get(name), [loc.search, name]);
 }
 
+function BubbleToggle({
+  checked,
+  onToggle,
+  title,
+  disabled,
+}: {
+  checked: boolean;
+  onToggle: () => void;
+  title?: string;
+  disabled?: boolean;
+}) {
+  return (
+    <span
+      role="checkbox"
+      aria-checked={checked}
+      aria-disabled={disabled ? "true" : "false"}
+      tabIndex={disabled ? -1 : 0}
+      title={title}
+      onClick={() => {
+        if (disabled) return;
+        onToggle();
+      }}
+      onKeyDown={(e) => {
+        if (disabled) return;
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onToggle();
+        }
+      }}
+      style={{
+        width: 14,
+        height: 14,
+        borderRadius: 999,
+        border: "1px solid var(--border)",
+        background: checked ? "var(--accent)" : "transparent",
+        display: "inline-block",
+        cursor: disabled ? "not-allowed" : "pointer",
+        opacity: disabled ? 0.6 : 1,
+        flex: "0 0 auto",
+      }}
+    />
+  );
+}
+
 /** =========================
  * Calendar Page
  * ========================= */
@@ -947,19 +991,17 @@ async function deleteCommentWithReplies(commentId: string) {
         <div className="card" style={{ padding: 12 }}>
           <div style={{ display: "flex", justifyContent: "space-between", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
             <div style={{ fontWeight: 900 }}>RSVP</div>
-            <label style={{ display: "flex", gap: 10, alignItems: "center" }}>
-              <span className="small">{rsvpOn ? "RSVP" : "RSVP"}</span>
-              <input
-                type="checkbox"
-                checked={rsvpOn}
-                disabled={rsvpBusy}
-                onChange={(e) => void toggleRsvp(e.target.checked)}
-              />
-            </label>
-          </div>
+<label style={{ display: "flex", gap: 10, alignItems: "center" }}>
+  <span className="small">RSVP</span>
 
-          <div className="small" style={{ marginTop: 10 }}>
-            {rsvpList.length ? "Attendees:" : "No RSVPs yet."}
+  <BubbleToggle
+    checked={rsvpOn}
+    disabled={rsvpBusy}
+    onToggle={() => void toggleRsvp(!rsvpOn)}
+    title={rsvpBusy ? "Saving…" : rsvpOn ? "RSVP’d" : "Not RSVP’d"}
+  />
+</label>
+
           </div>
 
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 8 }}>
