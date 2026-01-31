@@ -39,7 +39,7 @@ export function ProfilePage() {
   const [aliasDraft, setAliasDraft] = useState("");
   const [pronounsDraft, setPronounsDraft] = useState("");
   const [themeDraft, setThemeDraft] = useState<ThemeMode>("dark");
-  const [accentDraft, setAccentDraft] = useState("#7c3aed");
+const [accentDraft, setAccentDraft] = useState("#ffffff");
 
   const [savingPrefs, setSavingPrefs] = useState(false);
   const [savingAlias, setSavingAlias] = useState(false);
